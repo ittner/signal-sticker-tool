@@ -1,3 +1,0 @@
-pyyaml
-pyxdg
-signalstickers-client
