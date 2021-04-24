@@ -163,7 +163,8 @@ class StickerDefinitionError(AbortException):
 
 def parse_pack_yaml(basepath):
     yfname = os.path.join(basepath, SRC_YAML_FNAME)
-    ydata = yaml.safe_load(open(yfname))
+    with open(yfname) as fp:
+        ydata = yaml.safe_load(fp)
 
     if not "meta" in ydata:
         raise StickerDefinitionError("sticker metadata not defined")
