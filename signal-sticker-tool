@@ -172,7 +172,7 @@ def parse_pack_yaml(basepath):
     if type(meta) != dict:
         raise StickerDefinitionError('Element "meta" must be a map')
     if not "title" in meta or meta["title"].strip() == "":
-        raise StickerDefinitionError("Pack title name not defined")
+        raise StickerDefinitionError("Pack title not defined")
     if not "author" in meta or meta["author"].strip() == "":
         raise StickerDefinitionError("Author name not defined")
     if "cover" in meta and meta["cover"] != None and meta["cover"].strip() != "":
@@ -221,7 +221,7 @@ def get_user_credentials(args):
 def do_login(args):
     sys.stdout.write(
         """
-For now, the only way to login is "borrowing" the credentials from a
+For now, the only way to login is "borrowing" the credentials from an
 already logged-in Signal Desktop client. On your client, open the Developer
 Tools and type "window.reduxStore.getState().items.uuid_id" to the the user
 name and "window.reduxStore.getState().items.password" to get the password.
@@ -436,7 +436,7 @@ def main():
     login_parser = subparsers.add_parser(
         "login",
         help=(
-            "Ask for Signal credentials and save them in a credential file "
+            "Ask for Signal credentials and save them to a credential file "
             "for future use. For now, the only login method supported is "
             "the username and password from Signal Desktop client."
         ),

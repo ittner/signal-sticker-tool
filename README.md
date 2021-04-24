@@ -19,7 +19,7 @@ In any current Linux distribution, the simplest way is just install the current 
 
     pip3 install https://github.com/ittner/signal-sticker-tool/archive/master.zip
 
-This assumes pip3 is installed and configured. You may also want to install in a isolated virtual environment, with:
+This assumes pip3 is installed and configured. You may also want to install in an isolated virtual environment, with:
 
     python3 -m my-venv
     . my-venv/bin/activate
@@ -36,10 +36,10 @@ None of these commands requires Git to be installed in your machine. However, if
 
 ## Creating a sticker pack
 
-First, a primer: stickers are stored in packs that are private and end-to-end encrypted, and neither the Signal CDN nor other users can read them (but servers can know the number of images in a pack, their approximate sizes, and who downloads them; by Signal standards, stickers are very leaky in the metadata department). They are saved **read-only** on the servers, indexed by a *pack_id* and encrypted with a *pack_key*. This key never leaves the clients by default and when sites like [signalstickers.com](https://signalstickers.com) publish a pack, they are just intentionally sharing both the id and the key with everybody. Once a pack is uploaded, it can not be modified anymore and will remain taking up space on the servers — so, remember this before doing any stupid test! These are the technicalities you need to know before making a sticker pack, but signalstickers-client has a [more detailed explanation](https://github.com/signalstickers/signalstickers-client/blob/master/STICKERS_INTERNALS.md).
+First, a primer: stickers are stored in packs that are private and end-to-end encrypted, and neither the Signal CDN nor other users can read them (but servers can know the number of images in a pack, their approximate sizes, and who downloads them; by Signal standards, stickers are very leaky in the metadata department). They are saved **read-only** in the servers, indexed by a *pack_id* and encrypted with a *pack_key*. This key never leaves the clients by default and when sites like [signalstickers.com](https://signalstickers.com) publish a pack, they are just intentionally sharing both the id and the key with everybody. Once a pack is uploaded, it can not be modified anymore and will remain taking up space on the servers — so, remember this before doing any stupid test! These are the technicalities you need to know before making a sticker pack, but signalstickers-client has a [more detailed explanation](https://github.com/signalstickers/signalstickers-client/blob/master/STICKERS_INTERNALS.md).
 
 
-Start by creating a directory for the sticker pack. By itself, the name of this directory does not matter, just choose something meaningful for yor pack. In this example we will call it `dinner-reactions`.
+Start by creating a directory for the sticker pack. The name of this directory does not matter, just choose something meaningful for your pack. In this example we will call it `dinner-reactions`.
 
 Then copy or move the image files there. Signal has a few [requirements and recommendations](https://support.signal.org/hc/en-us/articles/360031836512-Stickers#sticker_reqs) for making good stickers, and it is very important to follow them. There must be an image for every sticker and, optionally, one for the cover of this pack.
 
@@ -65,7 +65,7 @@ Where:
 
 Any other top-level element present in this file will be ignored and preserved through updates, so it is safe to add them for e.g. extra data used by an automatic sticker conversion tool.
 
-Creating a `stickers.yaml` manually for every pack can a tedious process but `signal-sticker-tool` can generate one automatically from the information already available. After copying the images to the pack directory, just enter into it and run `signal-sticker-tool init`. Example:
+Creating a `stickers.yaml` manually for every pack may be a tedious process, but `signal-sticker-tool` can generate one automatically from the information that is already available. After copying the images to the pack directory, just enter into it and run `signal-sticker-tool init`. Example:
 
     $ cd dinner-reactions
     $ signal-sticker-tool init --title "Dinner reactions" --author "Samwise Gamgee"
@@ -91,7 +91,7 @@ This command will create a HTML file called "preview.html" in the pack directory
 
 ### Uploading sticker packs to Signal
 
-Signal requires users to be authenticated before they can upload sticker packs (but they also say they do not keep association between stickers and who uploaded them). For now, the only way to log-in is "borrowing" credentials from a already logged Signal Desktop client. To do this, launch your client, open the Developer Tools and type `window.reduxStore.getState().items.uuid_id` to get the user name and `window.reduxStore.getState().items.password` to get the password. Then type
+Signal requires users to be authenticated before they can upload sticker packs (but they also say they do not keep association between stickers and who uploaded them). For now, the only way to log-in is "borrowing" credentials from an already logged Signal Desktop client. To do this, launch your client, open the Developer Tools and type `window.reduxStore.getState().items.uuid_id` to get the user name and `window.reduxStore.getState().items.password` to get the password. Then type
 
     $ signal-sticker-tool login
 
