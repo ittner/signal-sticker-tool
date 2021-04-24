@@ -64,7 +64,7 @@ def read_sticker_emoji_list(path, read_emojis=False, cover_fname="cover"):
     image_files = [
         os.path.normpath(f)
         for f in files
-        if f.split(".", 1)[-1].lower() in VALID_IMAGE_TYPES
+        if f.split(".")[-1].lower() in VALID_IMAGE_TYPES
     ]
     image_files.sort()
 
