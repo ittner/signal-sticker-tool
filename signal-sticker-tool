@@ -75,7 +75,7 @@ def read_sticker_emoji_list(path, read_emojis=False, cover_fname="cover"):
         for tmp in image_files:
             if tmp.split(".", 1)[0] == cover_fname:
                 if not cover:
-                    # Things get funny when several files mathches the cover.
+                    # Things get funny when several files matches the cover.
                     cover = tmp
             else:
                 tmplst.append(tmp)
@@ -133,7 +133,7 @@ def create_pack_yaml(title, author, path=".", read_emojis=False, allow_update=Fa
 
     base["meta"] = meta
 
-    # Try to reuse existing file:emoji associations, if possible.
+    # Try to reuse existing file:emoji associations when possible.
     cur_stickers = dict()
     if "stickers" in base and type(base["stickers"]) == list:
         lst = base["stickers"]
@@ -284,11 +284,11 @@ def print_pack_information(info):
     )
     print(
         "\n\nSignal stickers are encrypted and private. Nobody will be able "
-        "to use or even see anything about them without this  id and key. "
+        "to use or even see anything about them without this id and key. "
         "If you want to keep this pack for yourself, send this URL to your "
-        "phone to add them. If you want to share them publically, send this "
-        "URL to https://signalstickers.com/ (but once published, there is no "
-        "way to make them private again).\n"
+        "phone to add it. If you want to share them publicly, send this "
+        "URL to https://signalstickers.com/ (but once published, there is "
+        "no way to make it private again).\n"
     )
 
 
@@ -357,7 +357,7 @@ async def upload_pack(args):
         with open(res_path) as fp:
             info = yaml.safe_load(fp)
         print(
-            'File "%s" found: this sticker set was already uploaded! If '
+            'File "%s" found: this sticker pack was already uploaded! If '
             "you changed something, delete or rename this file and upload "
             "it again.\n" % res_path
         )
@@ -437,8 +437,8 @@ def main():
         "login",
         help=(
             "Ask for Signal credentials and save them in a credential file "
-            "for future use. For now only a login and password, obtained "
-            "from Signal Desktop client, is supported."
+            "for future use. For now, the only login method supported is "
+            "the username and password from Signal Desktop client."
         ),
     )
 
@@ -491,12 +491,12 @@ def main():
         help=(
             "Read the list of emojis from the standard input when "
             "initializing a sticker pack. There must be one emoji per line "
-            "(ignoring empty lines). This script will assign the emojis in "
+            "(ignoring empty lines). This option will assign the emojis in "
             "order they were read to the recognized image files the pack "
-            "directory read in strict alphabetical order. The number of files "
-            "and emojis MUST match, otherwise the an error will be emitted. "
-            "Please check if the assignment is the intended one before "
-            "uploading!"
+            "directory also read in strict alphabetical order. The number "
+            "of files and emojis MUST match, otherwise the an error will be "
+            "emitted. Please check if the assignment is the intended one "
+            "before uploading!"
         ),
     )
 
@@ -506,7 +506,7 @@ def main():
         action="store_true",
         default=False,
         help=(
-            "Allows the command to update a existing pack definition. If "
+            "Allow the command to update an existing pack definition. If "
             "this option is not given, the command will not overwrite an "
             "existing pack definition file."
         ),
