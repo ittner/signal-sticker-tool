@@ -81,7 +81,11 @@ The results will be the following:
 
 As a practical matter, it is recommended to adopt the convention of naming the cover file as `cover.webp` (or other image format) and the sticker files as something else in alphabetical order (e.g. `sticker0001.webp`, `sticker0002.webp`, `sticker0003.webp`, ...). This will spare a lot of time by allowing `signal-sticker-tool init` to do the most tedious part of the work for you.
 
-Once the YAML definition is completed, double-check it and upload the pack to Signal.
+Once the YAML definition is completed, you can generate a preview of the entire pack with:
+
+    $ signal-sticker-tool preview
+
+This command will create a HTML file called "preview.html" in the pack directory with all stickers and the associated emoji in the same order they will appear in the selection window. Open this file in your browser, double-check it, and then upload the pack to Signal.
 
 
 

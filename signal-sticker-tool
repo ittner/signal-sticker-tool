@@ -24,6 +24,7 @@ import yaml
 import os
 import sys
 import getpass
+import html
 import asyncio
 from signalstickers_client import StickersClient
 from signalstickers_client.models import LocalStickerPack, Sticker
@@ -45,6 +46,9 @@ SRC_YAML_FNAME = "stickers.yaml"
 
 # YAML file with the results of the upload.
 RES_YAML_FNAME = "uploaded.yaml"
+
+# Output file for the preview command.
+PREVIEW_FNAME = "preview.html"
 
 # Suffixes for valid image types used in the "init" command. Always in lower case.
 VALID_IMAGE_TYPES = set(["webp", "jpg", "jpeg", "gif", "png"])
@@ -288,6 +292,64 @@ def print_pack_information(info):
     )
 
 
+PREVIEW_HTML_DOC = r"""<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8">
+  <title>signal-sticker-tool preview: %(title)s</title>
+  <style>
+.sticker {
+    position: relative;
+    display: inline-block;
+    paddind: 1em;
+    height: auto;
+}
+.sticker .emoji {
+    position: absolute;
+    left: 1em;
+    top: 1em;
+}
+  </style>
+ </head>
+ <body>
+  <h1>%(title)s</h1>
+  <p>A Signal sticker pack by: %(author)s</p>
+  <h2>Cover</h2>
+  <div class="sticker">
+   <img src="%(cover)s">
+  </div>
+  <h2>Stickers</h2>
+  %(items_html)s
+ </body>
+</html>
+"""
+
+PREVIEW_HTML_ITEM = r"""<div class="sticker">
+ <img src="%(file)s" title="%(chr)s" alt="%(chr)s" >
+ <span class="emoji">%(chr)s</span>
+</div>
+"""
+
+
+def html_escape_dict(src):
+    return {k: html.escape(str(v), True) for k, v in src.items()}
+
+
+def make_preview(args):
+    ydata = parse_pack_yaml(args.path)
+
+    if "cover" not in ydata["meta"] or not ydata["meta"]["cover"]:
+        ydata["meta"]["cover"] = ydata["stickers"][0]["file"]
+    docdata = html_escape_dict(ydata["meta"])
+    docdata["items_html"] = "".join(
+        PREVIEW_HTML_ITEM % html_escape_dict(d) for d in ydata["stickers"]
+    )
+
+    res_path = os.path.join(args.path, PREVIEW_FNAME)
+    with open(res_path, "w") as fp:
+        fp.write(PREVIEW_HTML_DOC % docdata)
+
+
 async def upload_pack(args):
 
     res_path = os.path.join(args.path, RES_YAML_FNAME)
@@ -454,6 +516,14 @@ def main():
         "upload", help="Upload the pack to Signal servers."
     )
     upload_parser.set_defaults(func=run_upload_pack)
+
+    preview_parser = subparsers.add_parser(
+        "preview",
+        help="Generate a HTML preview for this pack, with all stickers "
+        "and associated emoji in the order they will appear in the selection "
+        'box, and save it to file "%s" in the pack directory.' % PREVIEW_FNAME,
+    )
+    preview_parser.set_defaults(func=make_preview)
 
     try:
         args = main_parser.parse_args()
