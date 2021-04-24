@@ -172,9 +172,10 @@ def parse_pack_yaml(basepath):
     if not "author" in meta or meta["author"].strip() == "":
         raise StickerDefinitionError("Author name not defined")
     if "cover" in meta and meta["cover"] != None and meta["cover"].strip() != "":
-        meta["cover"] = os.path.abspath(os.path.join(basepath, meta["cover"]))
+        meta["cover_path"] = os.path.abspath(os.path.join(basepath, meta["cover"]))
     else:
         meta["cover"] = None
+        meta["cover_path"] = None
 
     if not "stickers" in ydata:
         raise StickerDefinitionError("Sticker list not defined")
@@ -316,7 +317,7 @@ async def upload_pack(args):
             st.image_data = fp.read()
         pack._addsticker(st)
 
-    cover_path = ydata["meta"]["cover"]
+    cover_path = ydata["meta"]["cover_path"]
     if cover_path:
         cover = Sticker()
         cover.id = pack.nb_stickers
