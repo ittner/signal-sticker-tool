@@ -52,11 +52,11 @@ meta:
   title: Dinner reactions
 stickers:
 - chr: '😋'
-  file: sticker01.webp
+  file: sticker_01.webp
 - chr: '🥔'
-  file: sticker02.webp
+  file: sticker_02.webp
 - chr: '🍄'
-  file: sticker03.webp
+  file: sticker_03.webp
 ```
 
 Where:
@@ -79,7 +79,7 @@ The results will be the following:
 - No sticker/emoji association will be created by default and you will need to edit the file afterwards to add it. However, if option `--read-emojis` (short form: `-E`) is given, command will read emojis from standard input, one per line, and assign them to the image files in alphabetical order. Just double-check the results before uploading the pack;
 - By default, command `init` will refuse to run if a `stickers.yaml` is already present in the directory. It is possible to override this with argument `--update` (short form: `-u`) and then `init` will update the file with the new information while preserving the existing one (this includes emoji assignments, but **not** the file ordering).
 
-As a practical matter, it is recommended to adopt the convention of naming the cover file as `cover.webp` (or other image format) and the sticker files as something else in alphabetical order (e.g. `sticker0001.webp`, `sticker0002.webp`, `sticker0003.webp`, ...). This will spare a lot of time by allowing `signal-sticker-tool init` to do the most tedious part of the work for you.
+As a practical matter, it is recommended to adopt the convention of naming the cover file as `cover.webp` (or other image format) and the sticker files as something else in alphabetical order (e.g. `sticker_01.webp`, `sticker_02.webp`, `sticker_03.webp`, ...). This will spare a lot of time by allowing `signal-sticker-tool init` to do the most tedious part of the work for you.
 
 Once the YAML definition is completed, you can generate a preview of the entire pack with:
 
@@ -118,6 +118,14 @@ And everything is done! Once the stickers finish uploading, URLs with the pack w
 
 `signal-sticker-tool` will also save the pack_id and the pack_key to a file `uploaded.yaml` in the target directory and refuse to upload the same set again if this file exists, showing the values from the previous upload instead. Since stickers can not be deleted or edited, this is a way to prevent accidental reuploads that only take unnecessary space on Signal servers. If you changed something and need to upload the pack again, just delete or rename the file to something else.
 
+
+### Downloading existing sticker packs
+
+It is also possible to download an existing Signal sticker pack as a sticker directory, complete with an automatically generated `stickers.yaml` for easy editing, using the command `signal-sticker-tool download PACK-ID PACK-KEY` (or optionally `signal-sticker-tool -p DEST-PATH download PACK-ID PACK-KEY` to save directly into a new directory). Example:
+
+    $ signal-sticker-tool -p bandit-the-cat download 9acc9e8aba563d26a4994e69263e3b25 5a6dff3948c28efb9b7aaf93ecc375c69fc316e78077ed26867a14d10a0f6a12
+
+Downloaded image files will be named sequentially (`sticker_00.webp`, `sticker_01.webp`, `sticker_02.webp`, ...) so if you, for example, want to add a new sticker after `sticker_01.webp`, just name it `sticker_01a.webp` (keeping the alphabetical order), run `signal-sticker-tool init -u` in that directory, edit `stickers.yaml` to set the new emoji and re-upload.
 
 
 

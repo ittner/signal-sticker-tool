@@ -25,6 +25,7 @@ import os
 import sys
 import getpass
 import html
+import math
 import asyncio
 from signalstickers_client import StickersClient
 from signalstickers_client.models import LocalStickerPack, Sticker
@@ -406,6 +407,96 @@ def run_upload_pack(args):
     loop.run_until_complete(upload_pack(args))
 
 
+async def download_pack(pack_id, pack_key):
+    async with StickersClient() as client:
+        pack = await client.get_pack(pack_id, pack_key)
+    return pack
+
+
+IMAGE_MAGIC_BITS = [
+    # (offset, magic, suffix)
+    (0, b"GIF89", ".gif"),
+    (0, b"\xff\xd8", ".jpeg"),
+    (7, b"JFIF", ".jpeg"),  # this can happen
+    (1, b"PNG", ".png"),
+    (0, b"RIFF", ".webp"),
+]
+
+
+def get_image_suffix(img_data):
+    for tmp in IMAGE_MAGIC_BITS:
+        if len(img_data) > tmp[0] and img_data[tmp[0] : tmp[0] + len(tmp[1])] == tmp[1]:
+            return tmp[2]
+    return ".xxx"
+
+
+def save_img_file(path, fname_prefix, img_data):
+    fname = fname_prefix + get_image_suffix(img_data)
+    fpath = os.path.join(path, fname)
+    try:
+        with open(
+            os.open(fpath, os.O_CREAT | os.O_WRONLY | os.O_EXCL, mode=0o600), "wb"
+        ) as fp:
+            fp.write(img_data)
+    except OSError as exc:
+        raise AbortException(str(exc))
+    return fname
+
+
+def run_download_pack(args):
+    dst_path = os.path.normpath(args.path)
+    def_path = os.path.join(dst_path, SRC_YAML_FNAME)
+    if os.path.exists(def_path):
+        raise AbortException(
+            "There is a sticker definition in directory %s. Delete it or "
+            "use another path if you want to proceed." % dst_path
+        )
+    else:
+        os.makedirs(dst_path, exist_ok=True)
+
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        pack = loop.run_until_complete(download_pack(args.pack_id, args.pack_key))
+    except Exception as e:
+        raise AbortException("Error downloading sticker pack: " + str(e))
+
+    meta = {
+        "title": pack.title,
+        "author": pack.author,
+    }
+
+    num_digits = math.ceil(math.log(pack.nb_stickers, 10))
+    sticker_list = []
+    for sticker in pack.stickers:
+        fname_prefix = "sticker_" + str(sticker.id).zfill(num_digits)
+        fname = save_img_file(dst_path, fname_prefix, sticker.image_data)
+        sticker_list.append({"chr": sticker.emoji or "", "file": fname})
+
+    if pack.cover:
+        cover_fname = save_img_file(dst_path, "cover", pack.cover.image_data)
+        meta["cover"] = cover_fname
+
+    def_data = {
+        "meta": meta,
+        "original-downloaded-pack-id": args.pack_id,
+        "original-downloaded-pack-key": args.pack_key,
+        "stickers": sticker_list,
+    }
+
+    with open(def_path, "w") as fp:
+        yaml.safe_dump(def_data, fp, allow_unicode=True, default_flow_style=False)
+
+    # That's a complete lie, but let's prevent accidental reuploads.
+    res_path = os.path.join(args.path, RES_YAML_FNAME)
+    info = {
+        "id": args.pack_id,
+        "key": args.pack_key,
+    }
+    with open(res_path, "w") as fp:
+        yaml.safe_dump(info, fp, allow_unicode=True, default_flow_style=False)
+
+
 def main():
     main_parser = argparse.ArgumentParser(
         description="Create Signal sticker packs from YAML definitions",
@@ -511,6 +602,26 @@ def main():
             "this option is not given, the command will not overwrite an "
             "existing pack definition file."
         ),
+    )
+
+    download_parser = subparsers.add_parser(
+        "download",
+        help=("Download a pack from Signal servers."),
+    )
+    download_parser.set_defaults(func=run_download_pack)
+    download_parser.add_argument(
+        "pack_id",
+        action="store",
+        type=str,
+        metavar="PACK-ID",
+        help="The sticker pack ID.",
+    )
+    download_parser.add_argument(
+        "pack_key",
+        action="store",
+        type=str,
+        metavar="PACK-KEY",
+        help="The sticker pack encryption key.",
     )
 
     upload_parser = subparsers.add_parser(
