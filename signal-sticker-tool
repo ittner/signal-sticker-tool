@@ -337,9 +337,7 @@ def html_escape_dict(src):
     return {k: html.escape(str(v), True) for k, v in src.items()}
 
 
-def make_preview(args):
-    ydata = parse_pack_yaml(args.path)
-
+def make_preview(ydata, dst_path):
     if "cover" not in ydata["meta"] or not ydata["meta"]["cover"]:
         ydata["meta"]["cover"] = ydata["stickers"][0]["file"]
     docdata = html_escape_dict(ydata["meta"])
@@ -347,9 +345,13 @@ def make_preview(args):
         PREVIEW_HTML_ITEM % html_escape_dict(d) for d in ydata["stickers"]
     )
 
-    res_path = os.path.join(args.path, PREVIEW_FNAME)
+    res_path = os.path.join(dst_path, PREVIEW_FNAME)
     with open(res_path, "w") as fp:
         fp.write(PREVIEW_HTML_DOC % docdata)
+
+
+def cmd_make_preview(args):
+    make_preview(parse_pack_yaml(args.path), args.path)
 
 
 def print_result_url(args):
@@ -500,6 +502,7 @@ def run_download_pack(args):
 
     with open(def_path, "w") as fp:
         yaml.safe_dump(def_data, fp, allow_unicode=True, default_flow_style=False)
+    make_preview(def_data, dst_path)
 
     # That's a complete lie, but let's prevent accidental reuploads.
     res_path = os.path.join(args.path, RES_YAML_FNAME)
@@ -649,7 +652,7 @@ def main():
         "and associated emoji in the order they will appear in the selection "
         'box, and save it to file "%s" in the pack directory.' % PREVIEW_FNAME,
     )
-    preview_parser.set_defaults(func=make_preview)
+    preview_parser.set_defaults(func=cmd_make_preview)
 
     url_parser = subparsers.add_parser(
         "url",
