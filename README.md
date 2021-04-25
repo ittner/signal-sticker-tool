@@ -118,6 +118,12 @@ And everything is done! Once the stickers finish uploading, URLs with the pack w
 
 `signal-sticker-tool` will also save the pack_id and the pack_key to a file `uploaded.yaml` in the target directory and refuse to upload the same set again if this file exists, showing the values from the previous upload instead. Since stickers can not be deleted or edited, this is a way to prevent accidental reuploads that only take unnecessary space on Signal servers. If you changed something and need to upload the pack again, just delete or rename the file to something else.
 
+Once a pack is uploaded, you can also use command `signal-sticker-tool url` to print the URL used to import the sticker pack into Signal. This command shows **only** the URL, so it is useful for piping the results to another command. It also makes very simple to show the URL as a QRCode: just install a pure-Python generator with `pip install qrcode` and then use it to print the code in the terminal with:
+
+    signal-sticker-tool url | qr
+
+
+
 
 ### Downloading existing sticker packs
 

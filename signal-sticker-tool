@@ -352,6 +352,20 @@ def make_preview(args):
         fp.write(PREVIEW_HTML_DOC % docdata)
 
 
+def print_result_url(args):
+    res_path = os.path.join(args.path, RES_YAML_FNAME)
+    if not os.path.exists(res_path):
+        raise AbortException(
+            "File %s found. This pack was not uploaded yet." % res_path
+        )
+    with open(res_path) as fp:
+        info = yaml.safe_load(fp)
+        print(
+            "https://signal.art/addstickers/#pack_id=%s&pack_key=%s"
+            % (info["id"], info["key"])
+        )
+
+
 async def upload_pack(args):
 
     res_path = os.path.join(args.path, RES_YAML_FNAME)
@@ -636,6 +650,15 @@ def main():
         'box, and save it to file "%s" in the pack directory.' % PREVIEW_FNAME,
     )
     preview_parser.set_defaults(func=make_preview)
+
+    url_parser = subparsers.add_parser(
+        "url",
+        help="Print the import URL generated from an uploaded pack. This "
+        "is the URL used to add a pack to Signal and the same that the "
+        'output of command "upload" will show, however, this command '
+        "prints *only* this URL, so it can be piped to another command.",
+    )
+    url_parser.set_defaults(func=print_result_url)
 
     try:
         args = main_parser.parse_args()
