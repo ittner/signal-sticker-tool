@@ -195,7 +195,7 @@ def parse_pack_yaml(basepath):
         if type(st) != dict:
             raise StickerDefinitionError("Unexpected entry type found in sticker list")
         if not "chr" in st:
-            # No emoji attached to sticker. Is this even valid?!
+            # No emoji attached to sticker.
             st["chr"] = ""
         if not "file" in st:
             raise StickerDefinitionError('Entry without required element "file"')
