@@ -20,13 +20,13 @@
 
 
 import argparse
-import yaml
-import os
-import sys
+import asyncio
 import getpass
 import html
 import math
-import asyncio
+import os
+import sys
+import yaml
 from signalstickers_client import StickersClient
 from signalstickers_client.models import LocalStickerPack, Sticker
 
@@ -118,7 +118,7 @@ def create_pack_yaml(title, author, path=".", read_emojis=False, allow_update=Fa
 
     # Try to reuse existing meta-information, if possible.
     meta = dict()
-    if ("meta" in base) and (type(base["meta"]) == dict):
+    if ("meta" in base) and isinstance(base["meta"], dict):
         meta = base["meta"]
 
     if "title" not in meta:
@@ -136,10 +136,10 @@ def create_pack_yaml(title, author, path=".", read_emojis=False, allow_update=Fa
 
     # Try to reuse existing file:emoji associations when possible.
     cur_stickers = dict()
-    if "stickers" in base and type(base["stickers"]) == list:
+    if "stickers" in base and isinstance(base["stickers"], list):
         lst = base["stickers"]
         for itm in lst:
-            if type(itm) == dict and "chr" in itm and "file" in itm:
+            if isinstance(itm, dict) and "chr" in itm and "file" in itm:
                 cur_stickers[itm["file"]] = itm["chr"]
 
     sticker_list = list()
@@ -171,13 +171,13 @@ def parse_pack_yaml(basepath):
         raise StickerDefinitionError("sticker metadata not defined")
 
     meta = ydata["meta"]
-    if type(meta) != dict:
+    if not isinstance(meta, dict):
         raise StickerDefinitionError('Element "meta" must be a map')
     if not "title" in meta or meta["title"].strip() == "":
         raise StickerDefinitionError("Pack title not defined")
     if not "author" in meta or meta["author"].strip() == "":
         raise StickerDefinitionError("Author name not defined")
-    if "cover" in meta and meta["cover"] != None and meta["cover"].strip() != "":
+    if "cover" in meta and meta["cover"] is not None and meta["cover"].strip() != "":
         meta["cover_path"] = os.path.abspath(os.path.join(basepath, meta["cover"]))
     else:
         meta["cover"] = None
@@ -186,13 +186,13 @@ def parse_pack_yaml(basepath):
     if not "stickers" in ydata:
         raise StickerDefinitionError("Sticker list not defined")
     stickers = ydata["stickers"]
-    if type(stickers) != list:
+    if not isinstance(stickers, list):
         raise StickerDefinitionError('Element "stickers" must be a list')
     if len(stickers) == 0:
         raise StickerDefinitionError("No stickers defined")
 
     for st in stickers:
-        if type(st) != dict:
+        if not isinstance(st, dict):
             raise StickerDefinitionError("Unexpected entry type found in sticker list")
         if not "chr" in st:
             # No emoji attached to sticker.
@@ -216,8 +216,11 @@ def get_user_credentials(args):
             creds = yaml.safe_load(fp)
         if ("username" in creds) and ("password" in creds):
             return (creds["username"], creds["password"])
+        return None
     except FileNotFoundError:
-        raise AbortException('Credentials file not found. Try "login" first.')
+        raise AbortException(
+            'Credentials file not found. Try "login" first.'
+        ) from FileNotFoundError
 
 
 def do_login(args):
@@ -455,7 +458,7 @@ def save_img_file(path, fname_prefix, img_data):
         ) as fp:
             fp.write(img_data)
     except OSError as exc:
-        raise AbortException("Failed to save image: " + str(exc))
+        raise AbortException("Failed to save image: " + str(exc)) from exc
     return fname
 
 
@@ -467,15 +470,14 @@ def run_download_pack(args):
             "There is a sticker definition in directory %s. Delete it or "
             "use another path if you want to proceed." % dst_path
         )
-    else:
-        os.makedirs(dst_path, exist_ok=True)
+    os.makedirs(dst_path, exist_ok=True)
 
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
         pack = loop.run_until_complete(download_pack(args.pack_id, args.pack_key))
-    except Exception as e:
-        raise AbortException("Error downloading sticker pack: %s." % str(e))
+    except Exception as exc:
+        raise AbortException("Error downloading sticker pack: %s." % str(exc)) from exc
 
     meta = {
         "title": pack.title,
