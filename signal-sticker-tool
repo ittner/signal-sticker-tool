@@ -306,7 +306,7 @@ PREVIEW_HTML_DOC = r"""<!DOCTYPE html>
 .sticker {
     position: relative;
     display: inline-block;
-    paddind: 1em;
+    padding: 1em;
     height: auto;
 }
 .sticker .emoji {
