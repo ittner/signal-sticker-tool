@@ -319,12 +319,52 @@ PREVIEW_HTML_DOC = r"""<!DOCTYPE html>
  <body>
   <h1>%(title)s</h1>
   <p>A Signal sticker pack by: %(author)s</p>
+  <div id="color-div"></div>
   <h2>Cover</h2>
   <div class="sticker">
    <img src="%(cover)s">
   </div>
   <h2>Stickers</h2>
   %(items_html)s
+  <script type="text/javascript">
+(function() {
+    window.addEventListener("load", function() {
+        var bg_colors = [
+            ["White", "#000000", "#ffffff"],
+            ["Black", "#ffffff", "#000000"],
+            ["Gray", "#000000","#aaaaaa" ]
+        ];
+
+        var color_div = document.getElementById("color-div");
+        color_div.appendChild(document.createTextNode("Background color:"));
+        bg_colors.forEach(c => {
+            var a = document.createElement("a");
+            a.innerHTML = c[0];
+            a.href = "#bg-" + c[0];
+            a.onclick = function() {
+                document.body.style.color = c[1];
+                document.body.style.backgroundColor = c[2];
+            };
+            color_div.appendChild(document.createTextNode(" "));
+            color_div.appendChild(a);
+        });
+
+        /* We "store" the last color selected in the URL fragment, so it
+         * will survive refreshes.
+         */
+        if (document.location.hash.startsWith("#bg-")) {
+            var color = document.location.hash.split("-")[1];
+            for (i in bg_colors) {
+                if (color == bg_colors[i][0]) {
+                    document.body.style.color = bg_colors[i][1];
+                    document.body.style.backgroundColor = bg_colors[i][2];
+                    break;
+                }
+            }
+        }
+    });
+})();
+  //</script>
  </body>
 </html>
 """
