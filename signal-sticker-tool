@@ -227,9 +227,10 @@ def do_login(args):
     sys.stdout.write(
         """
 For now, the only way to login is "borrowing" the credentials from an
-already logged-in Signal Desktop client. On your client, open the Developer
-Tools and type "window.reduxStore.getState().items.uuid_id" to the the user
-name and "window.reduxStore.getState().items.password" to get the password.
+already logged-in Signal Desktop client. Launch your client from command
+line passing the option "--enable-dev-tools", open the Developer Tools and
+type "window.reduxStore.getState().items.uuid_id" to the the user name
+and "window.reduxStore.getState().items.password" to get the password.
 
 This is *really* *ugly* and will change in the future.
 

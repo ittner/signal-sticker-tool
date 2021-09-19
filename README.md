@@ -91,7 +91,7 @@ This command will create a HTML file called "preview.html" in the pack directory
 
 ### Uploading sticker packs to Signal
 
-Signal requires users to be authenticated before they can upload sticker packs (but they also say they do not keep association between stickers and who uploaded them). For now, the only way to log-in is "borrowing" credentials from an already logged Signal Desktop client. To do this, launch your client, open the Developer Tools and type `window.reduxStore.getState().items.uuid_id` to get the user name and `window.reduxStore.getState().items.password` to get the password. Then type
+Signal requires users to be authenticated before they can upload sticker packs (but they also say they do not keep association between stickers and who uploaded them). For now, the only way to log-in is "borrowing" credentials from an already logged Signal Desktop client. To do this, launch the client from the command line with option passing the option `--enable-dev-tools`, open the Developer Tools and type `window.reduxStore.getState().items.uuid_id` to get the user name and `window.reduxStore.getState().items.password` to get the password. Then type
 
     $ signal-sticker-tool login
 
