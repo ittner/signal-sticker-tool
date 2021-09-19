@@ -15,21 +15,32 @@ This is a command line tool; internally, the sticker packaging and upload work i
 
 ## Installation
 
-In any current Linux distribution, the simplest way is just install the current version from Git repository master branch into your `$HOME` directory with the command:
+In any current Linux distribution, to install the current stable version in your `$HOME` directory, just type:
 
-    pip3 install https://github.com/ittner/signal-sticker-tool/archive/master.zip
+    pip3 install signal-sticker-tool
 
 This assumes pip3 is installed and configured. You may also want to install in an isolated virtual environment, with:
 
     python3 -m my-venv
     . my-venv/bin/activate
-    pip install https://github.com/ittner/signal-sticker-tool/archive/master.zip
-
-None of these commands requires Git to be installed in your machine. However, if you have it, you can also do:
-
-    pip3 install git+https://github.com/ittner/signal-sticker-tool/
+    pip install signal-sticker-tool
 
 `signal-sticker-tool`'s target operating system is a POSIX-compatible system (aka. any modern Unix-like as Linux, several BSDs, and MacOS X). It may or may not work on Windows, I am just not interested in it, but I will accept Windows-related code contributions if somebody sends me them.
+
+
+### Installing development versions
+
+Development versions come fresh from the Git repository and may have bug fixes that were not released yet, improvements that are being worked on, and (possibly) new bugs. If you want to play with this version, it is recommended to install it in an isolated virtual environment with the following commands:
+
+    python3 -m my-venv
+    . my-venv/bin/activate
+    pip install https://github.com/ittner/signal-sticker-tool/archive/master.zip
+
+This does not requires Git to be installed in your machine. However, if you have it, you can replace the last command with a:
+
+    pip install git+https://github.com/ittner/signal-sticker-tool/
+
+or just clone the repository, create and enable the virtual-env, and run a `pip install .` from the working copy. Developers wanting to modify the code or contribute back some change will probably choose this way first.
 
 
 
