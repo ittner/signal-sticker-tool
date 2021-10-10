@@ -7,7 +7,7 @@ A tool to create and upload [Signal](https://signal.org) sticker packs from the 
 
 ## Introduction
 
-`signal-sticker-tool` is a tool to generate Signal sticker packs from directories with images and a (possibly auto-generated) YAML definition and upload them to Signal servers. This approach is more practical than using then Signal desktop client (a slow and bloated Electron app), despite it still being necessary to get the authentication credentials. It can also work as a back-end for automatic sticker pack conversion scripts.
+`signal-sticker-tool` is a tool to generate Signal sticker packs from directories with images and a (possibly auto-generated) YAML definition and upload them to Signal servers. This approach is more practical than using then Signal desktop client, a slow and bloated Electron app, despite it still being necessary to get the authentication credentials. It can also work as a back-end for automatic sticker pack conversion scripts.
 
 This is a command line tool; internally, the sticker packaging and upload work is done by the library [signalstickers-client](https://github.com/signalstickers/signalstickers-client).
 
@@ -19,9 +19,9 @@ In any current Linux distribution, to install the current stable version in your
 
     pip3 install signal-sticker-tool
 
-This assumes pip3 is installed and configured. You may also want to install in an isolated virtual environment, with:
+This assumes pip3 is installed and configured. You may also want to install in an isolated virtual environment with:
 
-    python3 -m my-venv
+    python3 -m venv my-venv
     . my-venv/bin/activate
     pip install signal-sticker-tool
 
@@ -32,7 +32,7 @@ This assumes pip3 is installed and configured. You may also want to install in a
 
 Development versions come fresh from the Git repository and may have bug fixes that were not released yet, improvements that are being worked on, and (possibly) new bugs. If you want to play with this version, it is recommended to install it in an isolated virtual environment with the following commands:
 
-    python3 -m my-venv
+    python3 -m venv my-venv
     . my-venv/bin/activate
     pip install https://github.com/ittner/signal-sticker-tool/archive/master.zip
 
@@ -47,7 +47,7 @@ or just clone the repository, create and enable the virtual-env, and run a `pip 
 
 ## Creating a sticker pack
 
-First, a primer: stickers are stored in packs that are private and end-to-end encrypted, and neither the Signal CDN nor other users can read them (but servers can know the number of images in a pack, their approximate sizes, and who downloads them; by Signal standards, stickers are very leaky in the metadata department). They are saved **read-only** in the servers, indexed by a *pack_id* and encrypted with a *pack_key*. This key never leaves the clients by default and when sites like [signalstickers.com](https://signalstickers.com) publish a pack, they are just intentionally sharing both the id and the key with everybody. Once a pack is uploaded, it can not be modified anymore and will remain taking up space on the servers — so, remember this before doing any stupid test! These are the technicalities you need to know before making a sticker pack, but signalstickers-client has a [more detailed explanation](https://github.com/signalstickers/signalstickers-client/blob/master/STICKERS_INTERNALS.md).
+First, a primer: Signal stickers are stored in packs that are private and end-to-end encrypted, and neither the Signal CDN nor other users can read them, but servers can know the number of images in a pack, their approximate sizes, and who downloads them; by Signal standards, stickers are very leaky in the metadata department. They are saved **read-only** in the servers, indexed by a *pack_id* and encrypted with a *pack_key*. This key never leaves the clients by default and when sites like [signalstickers.com](https://signalstickers.com) publish a pack, they are just intentionally sharing both the id and the key with everybody. Once a pack is uploaded, it can not be modified anymore and will remain taking up space on the servers — so, remember this before doing any stupid test! These are the technicalities you need to know before making a sticker pack, but signalstickers-client has a [detailed explanation](https://github.com/signalstickers/signalstickers-client/blob/master/STICKERS_INTERNALS.md).
 
 
 Start by creating a directory for the sticker pack. The name of this directory does not matter, just choose something meaningful for your pack. In this example we will call it `dinner-reactions`.
@@ -76,7 +76,7 @@ Where:
 
 Any other top-level element present in this file will be ignored and preserved through updates, so it is safe to add them for e.g. extra data used by an automatic sticker conversion tool.
 
-Creating a `stickers.yaml` manually for every pack may be a tedious process, but `signal-sticker-tool` can generate one automatically from the information that is already available. After copying the images to the pack directory, just enter into it and run `signal-sticker-tool init`. Example:
+Creating a `stickers.yaml` manually for every pack may be a tedious process, but `signal-sticker-tool` can generate one automatically from the information that is already available. For that, after copying the images to the pack directory, just enter into it and run `signal-sticker-tool init`. Example:
 
     $ cd dinner-reactions
     $ signal-sticker-tool init --title "Dinner reactions" --author "Samwise Gamgee"
@@ -84,8 +84,8 @@ Creating a `stickers.yaml` manually for every pack may be a tedious process, but
 The results will be the following:
 
 - The command will recognize all image types relevant for stickers (WebP, JPEG, PNG, GIF ...);
-- If a file called `cover.*` is found, it will be used as the cover for the pack;
-- All other image files will be added to the sticker list in strict alphabetical order. It is possible, of course, to reorder them by editing the YAML file afterwards: renaming files before init or reordering elements afterwards is just a matter of choice;
+- If a file named `cover.*` is found, it will be used as the cover for the pack;
+- All other image files will be added to the sticker list in strict alphabetical order. It is possible, of course, to reorder them by editing the YAML file afterwards: renaming files before init or reordering elements afterwards is just a matter of preference;
 - Arguments `--title` (short form: `-T`) and `--author` (short form: `-A`) are optional. If not given, placeholder values will be used;
 - No sticker/emoji association will be created by default and you will need to edit the file afterwards to add it. However, if option `--read-emojis` (short form: `-E`) is given, command will read emojis from standard input, one per line, and assign them to the image files in alphabetical order. Just double-check the results before uploading the pack;
 - By default, command `init` will refuse to run if a `stickers.yaml` is already present in the directory. It is possible to override this with argument `--update` (short form: `-u`) and then `init` will update the file with the new information while preserving the existing one (this includes emoji assignments, but **not** the file ordering).
@@ -127,9 +127,9 @@ And everything is done! Once the stickers finish uploading, URLs with the pack w
     to share them publicly, send this URL to https://signalstickers.com/ (but
     once published, there is no way to make it private again).
 
-`signal-sticker-tool` will also save the pack_id and the pack_key to a file `uploaded.yaml` in the target directory and refuse to upload the same set again if this file exists, showing the values from the previous upload instead. Since stickers can not be deleted or edited, this is a way to prevent accidental reuploads that only take unnecessary space on Signal servers. If you changed something and need to upload the pack again, just delete or rename the file to something else.
+`signal-sticker-tool` will also save the pack_id and the pack_key to a file `uploaded.yaml` in the target directory and refuse to upload the same set again if this file already exists, showing the values from the previous upload instead. Since stickers can not be deleted or edited, this is a way to prevent accidental reuploads that only take unnecessary space on Signal servers. If you changed something and need to upload the pack again, just delete or rename the file to something else.
 
-Once a pack is uploaded, you can also use command `signal-sticker-tool url` to print the URL used to import the sticker pack into Signal. This command shows **only** the URL, so it is useful for piping the results to another command. It also makes very simple to show the URL as a QRCode: just install a pure-Python generator with `pip install qrcode` and then use it to print the code in the terminal with:
+Once a pack is uploaded, you can also use command `signal-sticker-tool url` to print the URL used to import the sticker pack into Signal. This command shows **only** the URL, so it is useful for piping the results to another command. It also makes very simple to show the URL as a QR code: just install a pure-Python generator with `pip install qrcode` and then use it to print the code in the terminal with:
 
     signal-sticker-tool url | qr
 
@@ -148,7 +148,7 @@ Downloaded image files will be named sequentially (`sticker_00.webp`, `sticker_0
 
 ## Contributing
 
-`signal-sticker-tool` is [hosted in GitHub](https://github.com/ittner/signal-sticker-tool/) and contributions of any kind are welcome (code, bug reports, etc.). If you don't have a GitHub account, you can also clone the repo, host it somewhere else and [contact me](#contact-information) instead.
+`signal-sticker-tool` is [hosted in GitHub](https://github.com/ittner/signal-sticker-tool/) and contributions of any kind are welcome (code, bug reports, etc.). If you don't have a GitHub account, you can also clone the repo, host your changes somewhere else and [contact me](#contact-information) instead.
 
 If you change the code, please run in through pyflakes for static analysis and [black](https://pypi.org/project/black/) to ensure a consistent formatting.
 
