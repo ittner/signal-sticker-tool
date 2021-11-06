@@ -138,7 +138,11 @@ Once a pack is uploaded, you can also use command `signal-sticker-tool url` to p
 
 ### Downloading existing sticker packs
 
-It is also possible to download an existing Signal sticker pack as a sticker directory, complete with an automatically generated `stickers.yaml` for easy editing, using the command `signal-sticker-tool download PACK-ID PACK-KEY` (or optionally `signal-sticker-tool -p DEST-PATH download PACK-ID PACK-KEY` to save directly into a new directory). Example:
+It is possible to download an existing Signal sticker pack as a sticker directory, complete with an automatically generated `stickers.yaml` for easy editing, using the command `signal-sticker-tool download PACK-URL` (or optionally `signal-sticker-tool -p DEST-PATH download PACK-URL` to save directly into a new directory), where `PACK-URL` is the signal.art URL used for adding the sticker to Signal. Example:
+
+    $ signal-sticker-tool -p bandit-the-cat download "https://signal.art/addstickers/#pack_id=9acc9e8aba563d26a4994e69263e3b25&pack_key=5a6dff3948c28efb9b7aaf93ecc375c69fc316e78077ed26867a14d10a0f6a12"
+
+The command also allows downloading packs using the pack id and key directly, as follows:
 
     $ signal-sticker-tool -p bandit-the-cat download 9acc9e8aba563d26a4994e69263e3b25 5a6dff3948c28efb9b7aaf93ecc375c69fc316e78077ed26867a14d10a0f6a12
 

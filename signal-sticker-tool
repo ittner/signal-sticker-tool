@@ -26,6 +26,7 @@ import html
 import math
 import os
 import sys
+import urllib.parse
 import yaml
 from signalstickers_client import StickersClient
 from signalstickers_client.models import LocalStickerPack, Sticker
@@ -503,7 +504,46 @@ def save_img_file(path, fname_prefix, img_data):
     return fname
 
 
+def parse_pack_id_key_url(args):
+    """Get the pack ID and pack key from the command line. Looks for a
+    signal.art URL (which have both) or by a back pack-id and pack-key.
+
+    URLs must be in format:
+        https://signal.art/addstickers/#pack_id=XXXX&pack_key=YYYY
+
+    Returns: (pack_id, pack_key)
+    """
+
+    ret = urllib.parse.urlparse(args.pack_url_id)
+    if ret.netloc:
+        if (
+            ret.netloc == "signal.art"
+            and ret.path == "/addstickers/"
+            and len(ret.fragment) > 10
+        ):
+            qret = urllib.parse.parse_qs(ret.fragment)
+            if (
+                "pack_id" in qret
+                and "pack_key" in qret
+                and len(qret["pack_id"]) == 1
+                and len(qret["pack_key"]) == 1
+            ):
+                return (qret["pack_id"][0], qret["pack_key"][0])
+        raise AbortException(
+            "Invalid pack URL. Must be in format "
+            + "https://signal.art/addstickers/#pack_id=XXXX&pack_key=YYYY"
+        )
+
+    if not args.pack_key or len(args.pack_key) < 16:
+        raise AbortException(
+            "Invalid arguments. When downloading from a pack-id you must "
+            "also give the pack-key."
+        )
+    return (ret.path, args.pack_key)
+
+
 def run_download_pack(args):
+    pack_id, pack_key = parse_pack_id_key_url(args)
     dst_path = os.path.normpath(args.path)
     def_path = os.path.join(dst_path, SRC_YAML_FNAME)
     if os.path.exists(def_path):
@@ -516,7 +556,7 @@ def run_download_pack(args):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
-        pack = loop.run_until_complete(download_pack(args.pack_id, args.pack_key))
+        pack = loop.run_until_complete(download_pack(pack_id, pack_key))
     except Exception as exc:
         raise AbortException("Error downloading sticker pack: %s." % str(exc)) from exc
 
@@ -538,8 +578,8 @@ def run_download_pack(args):
 
     def_data = {
         "meta": meta,
-        "original-downloaded-pack-id": args.pack_id,
-        "original-downloaded-pack-key": args.pack_key,
+        "original-downloaded-pack-id": pack_id,
+        "original-downloaded-pack-key": pack_key,
         "stickers": sticker_list,
     }
 
@@ -550,8 +590,8 @@ def run_download_pack(args):
     # That's a complete lie, but let's prevent accidental reuploads.
     res_path = os.path.join(args.path, RES_YAML_FNAME)
     info = {
-        "id": args.pack_id,
-        "key": args.pack_key,
+        "id": pack_id,
+        "key": pack_key,
     }
     with open(res_path, "w") as fp:
         yaml.safe_dump(info, fp, allow_unicode=True, default_flow_style=False)
@@ -670,18 +710,21 @@ def main():
     )
     download_parser.set_defaults(func=run_download_pack)
     download_parser.add_argument(
-        "pack_id",
+        "pack_url_id",
         action="store",
         type=str,
-        metavar="PACK-ID",
-        help="The sticker pack ID.",
+        metavar="PACK-URL-OR-ID",
+        help="A Signal.art URL pointing to the sticker pack or the pack ID.",
     )
     download_parser.add_argument(
         "pack_key",
         action="store",
         type=str,
+        nargs="?",
         metavar="PACK-KEY",
-        help="The sticker pack encryption key.",
+        help="The sticker pack encryption key. Signal.art URLs already have "
+        'a key, so this is only necessary when downloading from a "bare" '
+        "pack id.",
     )
 
     upload_parser = subparsers.add_parser(
