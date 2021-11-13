@@ -123,8 +123,8 @@ And everything is done! Once the stickers finish uploading, URLs with the pack w
 
     Signal stickers are encrypted and private. Nobody will be able to use or
     even see anything about them without this id and key. If you want to keep
-    this pack for yourself, send this URL to your phone to add it. If you want
-    to share them publicly, send this URL to https://signalstickers.com/ (but
+    this pack for yourself, send this URL to your phone to add it; i you want
+    to share it publicly, send this URL to https://signalstickers.com/ (but
     once published, there is no way to make it private again).
 
 `signal-sticker-tool` will also save the pack_id and the pack_key to a file `uploaded.yaml` in the target directory and refuse to upload the same set again if this file already exists, showing the values from the previous upload instead. Since stickers can not be deleted or edited, this is a way to prevent accidental reuploads that only take unnecessary space on Signal servers. If you changed something and need to upload the pack again, just delete or rename the file to something else.

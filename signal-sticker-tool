@@ -293,9 +293,9 @@ def print_pack_information(info):
         "\n\nSignal stickers are encrypted and private. Nobody will be able "
         "to use or even see anything about them without this id and key. "
         "If you want to keep this pack for yourself, send this URL to your "
-        "phone to add it. If you want to share them publicly, send this "
-        "URL to https://signalstickers.com/ (but once published, there is "
-        "no way to make it private again).\n"
+        "phone to add it; if you want to share it publicly, send this URL "
+        "to https://signalstickers.com/ (but once published, there is no way "
+        "to make it private again).\n"
     )
 
 
