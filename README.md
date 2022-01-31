@@ -19,10 +19,15 @@ In any current Linux distribution, to install the current stable version in your
 
     pip3 install signal-sticker-tool
 
-This assumes pip3 is installed and configured. You may also want to install in an isolated virtual environment with:
+This assumes pip3 is installed and configured. You may instead want to install in an isolated virtual environment with:
 
     python3 -m venv my-venv
     . my-venv/bin/activate
+    pip install signal-sticker-tool
+
+Or you may instead use virtualenvwrapper or on Windows virtualenvwrapper-win to make managing virtual environments eadsier. In that case:
+
+    mkvirtualenv my-venv
     pip install signal-sticker-tool
 
 `signal-sticker-tool`'s target operating system is a POSIX-compatible system (aka. any modern Unix-like as Linux, several BSDs, and MacOS X). It may or may not work on Windows, I am just not interested in it, but I will accept Windows-related code contributions if somebody sends me them.
@@ -43,7 +48,18 @@ This does not requires Git to be installed in your machine. However, if you have
 or just clone the repository, create and enable the virtual-env, and run a `pip install .` from the working copy. Developers wanting to modify the code or contribute back some change will probably choose this way first.
 
 
+## Running the app on Windows
 
+To run the app from a Windows command line (assuming you have Python installed and added to your PATH and that have installed signal-sticker-tool following the steps above) you need to make sure you are running Python in UTF-8 mode. the easiers way to do this is by running py using the -Xutf8 parameter, using the following command syntax:
+
+    py -Xutf8 [full_path_to_signal-sticker-tool] [parameter]
+
+for example:
+
+    cd "C:\Users\Bob\Desktop\wojak stickers"
+    py -Xutf8 C:\path-to-your-venv\my-venv\Scripts\signal-sticker-tool login
+    py -Xutf8 C:\path-to-your-venv\my-venv\Scripts\signal-sticker-tool upload
+    
 
 ## Creating a sticker pack
 
